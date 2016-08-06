@@ -9,6 +9,10 @@ const parts = require('./libs/parts');
 
 const PATHS = {
   app: path.join(__dirname, 'app'),
+  style: [
+    path.join(__dirname, 'node_modules', 'purecss'),
+    path.join(__dirname, 'app', 'main.css')
+  ],
   build: path.join(__dirname, 'build'),
 };
 
@@ -17,6 +21,7 @@ const common = {
   // We'll be using the latter form given it's
   // convenient with more complex configurations.
   entry: {
+    style: PATHS.style,
     app: PATHS.app,
   },
   output: {
@@ -31,12 +36,30 @@ const common = {
 let config;
 switch(process.env.npm_lifecycle_event) {
   case 'build': 
+  case 'stats':
     config = merge(
       common,
       {
         devtool: 'source-map',
+        output: {
+          path: PATHS.build,
+          // Tweak this to match your GitHub project name
+          publicPath: '/webpack-demo/',
+          filename: '[name].[chunkhash].js',
+          // This is used for require.ensure. The setup
+          // will work without but this is useful to set.
+          chunkFilename: '[chunkhash].js',
+        },
       },
-      parts.setupCSS(PATHS.app)
+      parts.clean(PATHS.build),
+      parts.setFreeVariable('process.env.NODE_ENV', 'production'),
+      parts.extractBundle({
+        name: 'vendor',
+        entries: ['react'],
+      }),
+      parts.minify(),
+      parts.extractCSS(PATHS.style),
+      parts.purifyCSS([PATHS.app])
     );
     break;
   default: 
@@ -45,7 +68,7 @@ switch(process.env.npm_lifecycle_event) {
       {
         devtool: 'eval-source-map',
       },
-      parts.setupCSS(PATHS.app),
+      parts.setupCSS(PATHS.style),
         parts.devServer({
         // Customize host/port here if needed
         host: process.env.HOST,
@@ -54,4 +77,6 @@ switch(process.env.npm_lifecycle_event) {
     );
 }
 
-module.exports = validate(config);
+module.exports = validate(config, {
+  quiet: true,
+});

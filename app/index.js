@@ -1,9 +1,3 @@
 var component = require('./component');
-
-let styles = require('./main.css'); 
-
-// const componentE = component();
-// document.body.appendChild(componentE);
-// componentE.className = styles.redButton;
-
+const react = require('react');
 document.body.appendChild(component());

@@ -1,4 +1,7 @@
 const webpack = require('webpack');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const PurifyCSSPlugin = require('purifycss-webpack-plugin');
 
 exports.devServer = (options) => {
   return {
@@ -53,5 +56,89 @@ exports.setupCSS = (paths) => {
         }
       ]
     }
+  };
+};
+
+exports.minify = () => {
+  return {
+    plugins: [
+      new webpack.optimize.UglifyJsPlugin({
+        compress: {
+          warnings: false,
+        }
+      })
+    ],
+  };
+};
+
+exports.setFreeVariable = (key, value) => {
+  const env = {};
+  env[key] = JSON.stringify(value);
+  return {
+    plugins: [
+      new webpack.DefinePlugin(env)
+    ],
+  };
+};
+
+exports.extractBundle = (options) => {
+  const entry = {};
+  entry[options.name] = options.entries;
+
+  return {
+    // Define an entry point needed for splitting
+    entry: entry,
+    plugins: [
+      // Extract bundle and manifest files. Manifest is
+      // needed for reliable caching.
+      new webpack.optimize.CommonsChunkPlugin({
+        names: [options.name, 'manifest'],
+      })
+    ]
+  };
+};
+
+exports.clean = (path) => {
+  return {
+    plugins: [
+      new CleanWebpackPlugin([path], {
+        // Without `root` CleanWebpackPlugin won't point to our
+        // project and will fail to work.
+        root: process.cwd(),
+      })
+    ],
+  };
+};
+
+exports.extractCSS = (paths) => {
+  return {
+    module: {
+      loaders: [
+        // Extract CSS during build
+        {
+          test: /\.css$/,
+          loader: ExtractTextPlugin.extract('style', 'css'),
+          include: paths,
+        }
+      ]
+    },
+    plugins: [
+      // Output extracted CSS to a file
+      new ExtractTextPlugin('[name].[chunkhash].css')
+    ],
+  };
+};
+
+exports.purifyCSS = (paths) => {
+  return {
+    plugins: [
+      new PurifyCSSPlugin({
+        basePath: process.cwd(),
+        // `paths` is used to point PurifyCSS to files not
+        // visible to Webpack. You can pass glob patterns
+        // to it
+        paths: paths,
+      })
+    ]
   };
 };
