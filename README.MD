@@ -1,4 +1,4 @@
-# Redux Examples #
+# Webpack Survival Examples #
 
 ## Description
 Examples for [Webpack survival](http://survivejs.com/webpack/introduction)
