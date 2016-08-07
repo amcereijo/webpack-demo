@@ -31,7 +31,36 @@ const common = {
   },
   plugins: [
     new HtmlWebpackPlugin({ title: 'Webpack demo' })
-  ]
+  ],
+  module: {
+    preLoaders: [
+      {
+        test: /\.jsx?$/,
+        loaders: ['eslint'],
+        include: PATHS.app
+      },
+      {
+        test: /\.css$/,
+        loaders: ['postcss'],
+        include: PATHS.app
+      },
+      {
+        test: /\.jsx?$/,
+        loaders: ['jshint'],
+        // define an include so we check just the files we need
+        include: PATHS.app
+      }
+    ]
+  },
+  postcss: function () {
+    return [
+      stylelint({
+        rules: {
+          'color-hex-case': 'lower'
+        }
+      })
+    ];
+  }
 }
 
 let config;

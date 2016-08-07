@@ -1,7 +1,7 @@
 let data = {};
 
 const showData = function(el) {
-  return function(evt) {
+  return function() {
     el.innerHTML = data.message || 'No message';
   };
 }
