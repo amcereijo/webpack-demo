@@ -22,7 +22,8 @@ const common = {
   // convenient with more complex configurations.
   entry: {
     style: PATHS.style,
-    app: PATHS.app,
+    app: [PATHS.app + '/index.js', PATHS.app + '/index.js' ],
+    data: PATHS.app + '/data.js',
   },
   output: {
     path: PATHS.build,
@@ -53,6 +54,10 @@ switch(process.env.npm_lifecycle_event) {
       },
       parts.clean(PATHS.build),
       parts.setFreeVariable('process.env.NODE_ENV', 'production'),
+      // parts.extractBundle({
+      //   name: 'data',
+      //   entries: [PATHS.app + '/data.js'],
+      // }),
       parts.extractBundle({
         name: 'vendor',
         entries: ['react'],
