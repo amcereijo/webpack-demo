@@ -78,10 +78,10 @@ switch(process.env.npm_lifecycle_event) {
       },
       parts.clean(PATHS.build),
       parts.setFreeVariable('process.env.NODE_ENV', 'production'),
-      // parts.extractBundle({
-      //   name: 'data',
-      //   entries: [PATHS.app + '/data.js'],
-      // }),
+      parts.extractBundle({
+        name: 'data',
+        entries: [PATHS.app + '/data.js'],
+      }),
       parts.extractBundle({
         name: 'vendor',
         entries: ['react'],
