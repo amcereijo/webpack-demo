@@ -4,6 +4,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const merge = require('webpack-merge');
 const validate = require('webpack-validator');
+const stylelint = require('stylelint');
 
 const parts = require('./libs/parts');
 
@@ -44,12 +45,6 @@ const common = {
         loaders: ['postcss'],
         include: PATHS.app
       },
-      {
-        test: /\.jsx?$/,
-        loaders: ['jshint'],
-        // define an include so we check just the files we need
-        include: PATHS.app
-      }
     ]
   },
   postcss: function () {
